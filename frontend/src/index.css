@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ukrywa scrollbary w kontenerach poziomych */
+.scrollbar-none {
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* IE & Edge */
+}
+.scrollbar-none::-webkit-scrollbar {
+    display: none;                  /* Chrome, Safari */
+}
