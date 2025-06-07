@@ -1,6 +1,4 @@
-// backend/utils/tmdb.js
 const axios = require("axios");
-// prosty cache w pamięci: { key: { data, expires } }
 const cache = {};
 const TTL = 10 * 60 * 1000; // 10 min
 

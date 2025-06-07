@@ -1,7 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
-// Funkcja do generowania tokena JWT
 const generateToken = (user) => {
     return jwt.sign(
         {
@@ -14,22 +13,17 @@ const generateToken = (user) => {
     );
 };
 
-// REJESTRACJA
 exports.register = async (req, res) => {
     const { username, email, password } = req.body;
 
     try {
-        // Sprawdź, czy użytkownik już istnieje
         const existingUser = await User.findOne({ email });
         if (existingUser)
             return res.status(400).json({ message: "Email already exists" });
 
-        // Utwórz i zapisz nowego użytkownika
         const newUser = new User({ username, email, password });
         await newUser.save();
-
         const token = generateToken(newUser);
-
         res.status(201).json({
             user: {
                 id: newUser._id,
@@ -45,17 +39,14 @@ exports.register = async (req, res) => {
     }
 };
 
-// LOGOWANIE
 exports.login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Znajdź użytkownika
         const user = await User.findOne({ email });
         if (!user)
             return res.status(400).json({ message: "Invalid credentials" });
 
-        // Sprawdź hasło
         const isMatch = await user.comparePassword(password);
         if (!isMatch)
             return res.status(400).json({ message: "Invalid credentials" });

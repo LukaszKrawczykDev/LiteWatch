@@ -3,7 +3,6 @@ const router = express.Router();
 const auth = require("../middleware/authMiddleware");
 const User = require("../models/User");
 
-// GET /api/me – zabezpieczony
 router.get("/me", auth, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select("-password");

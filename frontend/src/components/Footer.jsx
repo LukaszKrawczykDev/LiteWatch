@@ -1,27 +1,36 @@
-// src/components/Footer.jsx
+import { motion } from "framer-motion";
+import { Github } from "lucide-react";
+
 export default function Footer() {
     return (
-        <footer className="mt-auto w-full border-t border-zinc-200 dark:border-zinc-700 px-4 py-6 text-sm bg-white/80 dark:bg-zinc-900/80 backdrop-blur">
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-                <p className="text-zinc-600 dark:text-zinc-400">
-                    © {new Date().getFullYear()} LiteWatch — Wersja MVP
-                </p>
-
-                <ul className="flex gap-6 text-zinc-600 dark:text-zinc-400">
-                    <li className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">
-                        O nas
-                    </li>
-                    <li className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">
-                        Regulamin
-                    </li>
-                    <li className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">
-                        Kontakt
-                    </li>
-                    <li className="hover:text-blue-600 dark:hover:text-blue-400 transition cursor-pointer">
-                        GitHub
-                    </li>
-                </ul>
+        <motion.footer
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="mt-auto w-full border-t border-light-textSecondary dark:border-dark-textSecondary bg-light-surface dark:bg-dark-surface backdrop-blur px-6 py-8"
+        >
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-6">
+                <div className="flex-1 text-left text-xs uppercase tracking-wider text-light-textSecondary dark:text-dark-textSecondary">
+                    Projekt – Szkielety programistyczne w aplikacjach internetowych
+                </div>
+                <div className="flex-1 text-center flex flex-col items-center space-y-2">
+                    <p className="text-sm font-medium text-light-text dark:text-dark-text">
+                        Spodobała Ci się strona?
+                    </p>
+                    <a
+                        href="https://github.com/LukaszKrawczykDev"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-light-accent dark:text-dark-accent hover:text-light-primaryLight dark:hover:text-dark-primary transition-colors duration-200"
+                    >
+                        <Github className="w-5 h-5" />
+                        Zajrzyj na mojego GitHuba
+                    </a>
+                </div>
+                <div className="flex-1 text-right text-sm font-semibold text-light-text dark:text-dark-text">
+                    Autor: Łukasz Krawczyk
+                </div>
             </div>
-        </footer>
+        </motion.footer>
     );
 }

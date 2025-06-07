@@ -1,48 +1,67 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
+const API = import.meta.env.VITE_API_URL;
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [theme, setTheme] = useState("light");
+    const [user, setUser]         = useState(null);
+    const [theme, setTheme]       = useState("light");
+    const [init, setInit]         = useState(false);
+    const [watchCount, setWatchCount] = useState(0);      // 🆕
 
-    // Synchronizuj klasę 'dark' na <html>
+    /* dark / light */
     useEffect(() => {
-        const savedToken = localStorage.getItem("jwt");
-        if (savedToken && !user) {
-            // ▼ Opcjonalnie: wywołaj backend, by zweryfikować token
-            fetch(`${import.meta.env.VITE_API_URL}/api/me`, {
-                headers: { Authorization: `Bearer ${savedToken}` },
-            })
-                .then((r) => r.json())
-                .then((u) => login(u, savedToken))
-                .catch(() => localStorage.removeItem("jwt")); // token nie­ważny
-        }
-    }, []);               // ← pusty deps-array ⇒ tylko raz
+        document.documentElement.classList.toggle("dark", theme === "dark");
+    }, [theme]);
 
-// 2️⃣  Za każdym razem, gdy zmienia się theme – ustaw / zdejmij klasę `dark`
+    /* restore session + watchCount */
     useEffect(() => {
-        const root = document.documentElement;
-        if (theme === "dark") {
-            root.classList.add("dark");
-        } else {
-            root.classList.remove("dark");
-        }
-    }, [theme])
+        const token = localStorage.getItem("jwt");
+        if (!token) return setInit(true);
 
-    // Auth helpers
-    const login = (userData, token) => {
-        localStorage.setItem("jwt", token);      // ⬅ zapis
-        setUser(userData);
+        (async () => {
+            try {
+                const resMe = await fetch(`${API}/api/me`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (resMe.ok) {
+                    const me = await resMe.json();
+                    setUser({ id: me._id, username: me.username, email: me.email });
+
+                    const list = await fetch(`${API}/api/watchlist/me`, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }).then((r) => r.json());
+                    setWatchCount(list.length);
+                } else {
+                    localStorage.removeItem("jwt");
+                }
+            } catch {
+                localStorage.removeItem("jwt");
+            } finally {
+                setInit(true);
+            }
+        })();
+    }, []);
+
+    /* helpers */
+    const login = (u, token) => {
+        if (token) localStorage.setItem("jwt", token);
+        setUser(u);
     };
     const logout = () => {
-        localStorage.removeItem("jwt");          // ⬅ czyszczenie
+        localStorage.removeItem("jwt");
         setUser(null);
+        setWatchCount(0);
     };
-    const toggleTheme = () => setTheme((prev) => (prev === "light" ? "dark" : "light"));
+    const toggleTheme = () =>
+        setTheme((prev) => (prev === "light" ? "dark" : "light"));
+
+    if (!init) return null; // czekamy aż odtworzy sesję
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, theme, toggleTheme }}>
+        <AuthContext.Provider
+            value={{ user, login, logout, theme, toggleTheme, watchCount, setWatchCount }}
+        >
             {children}
         </AuthContext.Provider>
     );

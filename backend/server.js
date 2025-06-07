@@ -6,18 +6,18 @@ const dotenv = require("dotenv");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const movieRoutes = require("./routes/movieRoutes");
-
-
+const genreRoutes = require("./routes/genreRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
+const watchRoutes  = require("./routes/watchRoutes");
 
 const app = express();
 
-// Middleware
 app.use(
     cors({
-        origin: "http://localhost:5173", // Vite dev-server
+        origin: "http://localhost:5173",
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
-        credentials: false, // zostaw false, bo używamy tokenów – nie cookies
+        credentials: false,
     })
 );
 app.use(express.json());
@@ -25,6 +25,9 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api/movies", movieRoutes);
+app.use("/api/genres", genreRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/watchlist", watchRoutes);
 
 mongoose
     .connect(process.env.MONGO_URI)
